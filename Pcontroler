@@ -1,0 +1,104 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.UI;
+using UnityEngine;
+
+
+[RequireComponent (typeof(Rigidbody))]
+
+public class Pcontroler : MonoBehaviour {
+
+    public float speed = 5f;
+    private Rigidbody rb;
+    private Vector3 vel = Vector3.zero;
+    public Camera cam;
+    public float CHorizontal;
+    public float CVertical;
+    float h;
+    float v;
+
+    public Text CountText;
+    public Text WinText;
+    private int count;
+
+    public float time = 0.0f;
+    public GameObject player;
+    public GameObject Intro;
+    void Start () {
+
+        rb = GetComponent<Rigidbody>();
+        count = 0;
+        SetConutText();
+        WinText.text = "";
+       
+    }
+
+ 
+    void Update() {
+
+        time += Time.deltaTime;
+
+        if (time >= 48.0f)
+        {
+            player.gameObject.SetActive(true);
+            Intro.gameObject.SetActive(false);
+
+
+
+            float xMov = Input.GetAxisRaw("Horizontal");
+            float yMov = Input.GetAxisRaw("Vertical");
+            float zMov = Input.GetAxisRaw("Jump");
+
+            Vector3 MovH = transform.right * xMov;
+            Vector3 MovV = transform.forward * yMov;
+            Vector3 MovJ = transform.up * zMov;
+
+            vel = (MovH + MovV + MovJ).normalized * speed;
+            h = CHorizontal * Input.GetAxis("Mouse X");
+            v = CVertical * Input.GetAxis("Mouse Y");
+            transform.Rotate(0, h, 0);
+            cam.transform.Rotate(v, 0, 0);
+
+        }
+
+
+
+    }
+
+    private void FixedUpdate() {
+
+        if (vel != Vector3.zero) {
+
+            rb.MovePosition(rb.position + vel * Time.fixedDeltaTime);
+
+        }
+
+        
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+
+        if (other.gameObject.CompareTag("Pickup") )
+        {
+
+            other.gameObject.SetActive(false);
+            count = count + 1;
+            SetConutText();
+
+        }
+
+    }
+    void SetConutText()
+    {
+
+        CountText.text = "Puntos: " + count.ToString() + " /de 100";
+        if (count >= 100 )
+        {
+
+            WinText.text = "Ganaste!!!" + "\n\n\n" + "Creador: Fernando Montes." + "\n\n\n" + "Diseño: Fernando Montes." + "\n\n\n" + "Desarrollador: Fernando Montes.";
+
+        }
+    }
+}
+
